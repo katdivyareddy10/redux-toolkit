@@ -1,42 +1,61 @@
-import React, { useState } from 'react'
-import logo from './logo.svg'
-import './App.css'
+import React, { useState } from "react";
+import logo from "./logo.svg";
+import "./App.css";
+import { useAppDispatch, useAppSelector } from "./app/hooks";
+import { incremented, amountAdded } from "./features/counter/counterSlice";
+import { Breed, useFetchBreedQuery } from "./yelp/yelp-api-slice";
 
 function App() {
-  const [count, setCount] = useState(0)
+  // if we used useSelector generic react import, we wouldnt see what's in the state directly.
+  const count = useAppSelector(state => state.counter.value);
+  const [limit, setLimit] = useState<Number>(10);
+  const dispatch = useAppDispatch();
+
+  const handleClick = () => {
+    dispatch(incremented());
+    dispatch(amountAdded(4));
+  };
+
+  const { data = [], isFetching } = useFetchBreedQuery(limit);
 
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
+        <p>Boilerplate is from vite react</p>
         <p>
-          <button type="button" onClick={() => setCount((count) => count + 1)}>
+          <button type="button" onClick={handleClick}>
             count is: {count}
           </button>
         </p>
-        <p>
-          Edit <code>App.tsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
+      
+      <section>
+        Number of dogs fetched: {data.length}
+        <div>
+          Select number of dogs to fetch: 
+          <select value={limit} onChange={(e) => setLimit(Number(e.target.value))}>
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+          </select>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Picture</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((breed: Breed) => (
+              <tr key={breed.id}>
+                <td>{breed.name}</td>
+                <td><img height={100} width={200} src={breed.image.url}/></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
       </header>
     </div>
   )

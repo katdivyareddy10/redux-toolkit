@@ -15,15 +15,18 @@ const counterSlice = createSlice({
   name: "counter",
   initialState,
   reducers: {
-    incremented(state){
+    incremented(state) {
       // does not have to return anything, can easily show as mutation
       // it uses immer, immer wraps state updates and tracks all mutations 
       // before returning state making it immutable.
       state.value++;
+    },
+    amountAdded(state, action: PayloadAction<number>) {
+      state.value+=action.payload
     }
   }
 });
 
-export const { incremented } = counterSlice.actions;
+export const { incremented, amountAdded } = counterSlice.actions;
 
 export default counterSlice.reducer;
